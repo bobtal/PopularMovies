@@ -8,3 +8,6 @@
 /build
 /captures
 .externalNativeBuild
+/app/src/main/java/com/gmail/at/boban/talevski/popularmovies/Constants.java
+.idea/vcs.xml
+app/libs/
