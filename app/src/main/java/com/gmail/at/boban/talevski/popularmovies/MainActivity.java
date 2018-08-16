@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.gmail.at.boban.talevski.popularmovies.adapter.MovieAdapter;
 import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<MovieDbResponse> call, Throwable t) {
                 Log.d(TAG, "call unsuccessful");
-
+                Toast.makeText(MainActivity.this, R.string.error_displaying_movies, Toast.LENGTH_SHORT).show();
             }
         });
     }
