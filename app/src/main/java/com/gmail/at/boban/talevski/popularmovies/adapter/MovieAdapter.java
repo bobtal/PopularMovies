@@ -20,9 +20,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private List<Movie> movieList;
     private Context context;
 
-    public MovieAdapter(List<Movie> movieList, Context context) {
-        this.movieList = movieList;
+    public MovieAdapter(Context context, List<Movie> movieList) {
         this.context = context;
+        this.movieList = movieList;
     }
 
     @NonNull
@@ -57,8 +57,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         public void bind(int position) {
             Movie movie = movieList.get(position);
-            String posterImageUrl = "http://image.tmdb.org/t/p/" + "w185" + movie.poster_path;
-            Picasso.get().load(posterImageUrl).into(moviePosterImageView);
+            String posterImageUrl = "http://image.tmdb.org/t/p/" + "w185" + movie.posterPath;
+            Picasso.get()
+                    .load(posterImageUrl)
+                    .error(R.drawable.ic_launcher_background)
+                    .into(moviePosterImageView);
         }
     }
 }
