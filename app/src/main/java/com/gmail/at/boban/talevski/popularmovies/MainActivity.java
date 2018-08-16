@@ -8,6 +8,7 @@ import android.util.Log;
 import com.gmail.at.boban.talevski.popularmovies.adapter.MovieAdapter;
 import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
 import com.gmail.at.boban.talevski.popularmovies.model.Movie;
+import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
 import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
 
 import java.util.List;
@@ -29,16 +30,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         MovieDbApi api = RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class);
-        Call<List<Movie>> call = api.getPopularMovies(Constants.API_KEY);
-        call.enqueue(new Callback<List<Movie>>() {
+        Call<MovieDbResponse> call = api.getPopularMovies(Constants.API_KEY);
+        call.enqueue(new Callback<MovieDbResponse>() {
             @Override
-            public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
+            public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
                 Log.d(TAG, "call successful");
 //                adapter = new MovieAdapter(this, response);
             }
 
             @Override
-            public void onFailure(Call<List<Movie>> call, Throwable t) {
+            public void onFailure(Call<MovieDbResponse> call, Throwable t) {
                 Log.d(TAG, "call unsuccessful");
             }
         });
