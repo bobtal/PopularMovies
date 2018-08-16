@@ -2,6 +2,7 @@ package com.gmail.at.boban.talevski.popularmovies;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
@@ -29,18 +30,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        moviesRecyclerView = findViewById(R.id.rv_movies);
+
         MovieDbApi api = RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class);
         Call<MovieDbResponse> call = api.getPopularMovies(Constants.API_KEY);
         call.enqueue(new Callback<MovieDbResponse>() {
             @Override
             public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
                 Log.d(TAG, "call successful");
-//                adapter = new MovieAdapter(this, response);
+                adapter = new MovieAdapter(MainActivity.this, response.body().getResults());
+                moviesRecyclerView.setAdapter(adapter);
+                moviesRecyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
+                moviesRecyclerView.setHasFixedSize(true);
             }
 
             @Override
             public void onFailure(Call<MovieDbResponse> call, Throwable t) {
                 Log.d(TAG, "call unsuccessful");
+
             }
         });
     }
