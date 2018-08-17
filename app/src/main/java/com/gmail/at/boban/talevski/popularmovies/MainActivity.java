@@ -10,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.gmail.at.boban.talevski.popularmovies.adapter.MovieAdapter;
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView moviesRecyclerView;
     private MovieAdapter adapter;
     private MovieDbApi api;
+    ProgressBar loadingProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         moviesRecyclerView = findViewById(R.id.rv_movies);
+        loadingProgress = findViewById(R.id.loading_progress);
 
         api = RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class);
         loadMostPopularMovies();
@@ -74,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadMovieData(Call<MovieDbResponse> call) {
         if (isNetworkAvailable()) {
+            showProgressBar();
             call.enqueue(new Callback<MovieDbResponse>() {
                 @Override
                 public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
@@ -82,12 +87,16 @@ public class MainActivity extends AppCompatActivity {
                     moviesRecyclerView.setAdapter(adapter);
                     moviesRecyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
                     moviesRecyclerView.setHasFixedSize(true);
+
+                    hideProgressBar();
                 }
 
                 @Override
                 public void onFailure(Call<MovieDbResponse> call, Throwable t) {
                     Log.d(TAG, "call unsuccessful");
                     Toast.makeText(MainActivity.this, R.string.error_displaying_movies, Toast.LENGTH_LONG).show();
+
+                    hideProgressBar();
                 }
             });
         }
@@ -95,6 +104,17 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.no_network, Toast.LENGTH_LONG).show();
         }
     }
+
+    private void hideProgressBar() {
+        loadingProgress.setVisibility(View.INVISIBLE);
+        moviesRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void showProgressBar() {
+        loadingProgress.setVisibility(View.VISIBLE);
+        moviesRecyclerView.setVisibility(View.INVISIBLE);
+    }
+
 
     private boolean isNetworkAvailable() {
         ConnectivityManager manager =
