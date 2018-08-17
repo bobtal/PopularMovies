@@ -1,6 +1,7 @@
 package com.gmail.at.boban.talevski.popularmovies.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,11 +11,14 @@ import android.widget.ImageView;
 
 import com.gmail.at.boban.talevski.popularmovies.R;
 import com.gmail.at.boban.talevski.popularmovies.model.Movie;
+import com.gmail.at.boban.talevski.popularmovies.ui.DetailsActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>{
+
+    public static final String EXTRA_MOVIE = "com.gmail.at.boban.talevski.popularmovies.adapter.EXTRA_MOVIE";
 
     private List<Movie> movieList;
     private Context context;
@@ -45,13 +49,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         return movieList.size();
     }
 
-    class MovieViewHolder extends RecyclerView.ViewHolder {
+    class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView moviePosterImageView;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
             moviePosterImageView = itemView.findViewById(R.id.iv_movie_poster);
+            itemView.setOnClickListener(this);
         }
 
         public void bind(int position) {
@@ -61,6 +66,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                     .load(posterImageUrl)
                     .error(R.drawable.ic_launcher_background)
                     .into(moviePosterImageView);
+        }
+
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(context, DetailsActivity.class);
+            Movie movie = movieList.get(getAdapterPosition());
+            intent.putExtra(EXTRA_MOVIE, movie);
+            context.startActivity(intent);
         }
     }
 }
