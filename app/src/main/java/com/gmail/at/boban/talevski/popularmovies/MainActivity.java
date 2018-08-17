@@ -1,5 +1,8 @@
 package com.gmail.at.boban.talevski.popularmovies;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -35,21 +38,40 @@ public class MainActivity extends AppCompatActivity {
 
         MovieDbApi api = RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class);
         Call<MovieDbResponse> call = api.getPopularMovies(Constants.API_KEY);
-        call.enqueue(new Callback<MovieDbResponse>() {
-            @Override
-            public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
-                Log.d(TAG, "call successful");
-                adapter = new MovieAdapter(MainActivity.this, response.body().getResults());
-                moviesRecyclerView.setAdapter(adapter);
-                moviesRecyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
-                moviesRecyclerView.setHasFixedSize(true);
-            }
 
-            @Override
-            public void onFailure(Call<MovieDbResponse> call, Throwable t) {
-                Log.d(TAG, "call unsuccessful");
-                Toast.makeText(MainActivity.this, R.string.error_displaying_movies, Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (isNetworkAvailable()) {
+            call.enqueue(new Callback<MovieDbResponse>() {
+                @Override
+                public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
+                    Log.d(TAG, "call successful");
+                    adapter = new MovieAdapter(MainActivity.this, response.body().getResults());
+                    moviesRecyclerView.setAdapter(adapter);
+                    moviesRecyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
+                    moviesRecyclerView.setHasFixedSize(true);
+                }
+
+                @Override
+                public void onFailure(Call<MovieDbResponse> call, Throwable t) {
+                    Log.d(TAG, "call unsuccessful");
+                    Toast.makeText(MainActivity.this, R.string.error_displaying_movies, Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        else {
+            Toast.makeText(this, R.string.no_network, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+
+        boolean isAvailable = false;
+
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+            isAvailable = true;
+        }
+        return isAvailable;
     }
 }
