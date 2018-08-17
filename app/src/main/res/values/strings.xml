@@ -3,4 +3,6 @@
     <string name="movie_poster">Movie Poster</string>
     <string name="error_displaying_movies">Problem displaying movies. Check your internet connection</string>
     <string name="no_network">No network connectivity. Please check your network connection and try again.</string>
+    <string name="most_popular">Most Popular</string>
+    <string name="top_rated">Top Rated</string>
 </resources>

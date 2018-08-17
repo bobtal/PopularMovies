@@ -8,15 +8,14 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.gmail.at.boban.talevski.popularmovies.adapter.MovieAdapter;
 import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
-import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
 import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,8 +25,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    RecyclerView moviesRecyclerView;
-    MovieAdapter adapter;
+    private RecyclerView moviesRecyclerView;
+    private MovieAdapter adapter;
+    private MovieDbApi api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +36,43 @@ public class MainActivity extends AppCompatActivity {
 
         moviesRecyclerView = findViewById(R.id.rv_movies);
 
-        MovieDbApi api = RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class);
-        Call<MovieDbResponse> call = api.getPopularMovies(Constants.API_KEY);
+        api = RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class);
+        loadMostPopularMovies();
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int menuItemId = item.getItemId();
+
+        switch (menuItemId) {
+            case R.id.action_popular:
+                loadMostPopularMovies();
+                return true;
+
+            case R.id.action_top_rated:
+                loadTopRatedMovies();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void loadMostPopularMovies() {
+        Call<MovieDbResponse> call = api.getPopularMovies(Constants.API_KEY);
+        loadMovieData(call);
+    }
+
+    private void loadTopRatedMovies() {
+        Call<MovieDbResponse> call = api.getTopRatedMovies(Constants.API_KEY);
+        loadMovieData(call);
+    }
+
+    private void loadMovieData(Call<MovieDbResponse> call) {
         if (isNetworkAvailable()) {
             call.enqueue(new Callback<MovieDbResponse>() {
                 @Override
