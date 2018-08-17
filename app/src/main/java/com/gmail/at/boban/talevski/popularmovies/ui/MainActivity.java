@@ -1,4 +1,4 @@
-package com.gmail.at.boban.talevski.popularmovies;
+package com.gmail.at.boban.talevski.popularmovies.ui;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.gmail.at.boban.talevski.popularmovies.Constants;
+import com.gmail.at.boban.talevski.popularmovies.R;
 import com.gmail.at.boban.talevski.popularmovies.adapter.MovieAdapter;
 import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
