@@ -61,10 +61,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         public void bind(int position) {
             Movie movie = movieList.get(position);
-            String posterImageUrl = "http://image.tmdb.org/t/p/" + "w185" + movie.getPosterPath();
+            String posterImageUrl = Movie.POSTER_IMAGE_BASE_URL + movie.getPosterPath();
             Picasso.get()
                     .load(posterImageUrl)
-                    .error(R.drawable.ic_launcher_background)
+                    .error(R.drawable.no_image)
                     .into(moviePosterImageView);
         }
 
