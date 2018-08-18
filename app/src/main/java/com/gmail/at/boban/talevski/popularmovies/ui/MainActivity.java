@@ -87,7 +87,9 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "call successful");
                     adapter = new MovieAdapter(MainActivity.this, response.body().getResults());
                     moviesRecyclerView.setAdapter(adapter);
-                    moviesRecyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
+                    int numberOfColumns = getResources().getInteger(R.integer.columns);
+                    moviesRecyclerView.setLayoutManager(
+                            new GridLayoutManager(MainActivity.this, numberOfColumns));
                     moviesRecyclerView.setHasFixedSize(true);
 
                     hideProgressBar();
@@ -116,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         loadingProgress.setVisibility(View.VISIBLE);
         moviesRecyclerView.setVisibility(View.INVISIBLE);
     }
-
 
     private boolean isNetworkAvailable() {
         ConnectivityManager manager =
