@@ -9,22 +9,22 @@ import com.google.gson.annotations.SerializedName;
 public class Movie implements Parcelable{
     @SerializedName("title")
     @Expose
-    public String title;
+    private String title;
     @SerializedName("poster_path")
     @Expose
-    public String posterPath;
+    private String posterPath;
     @SerializedName("overview")
     @Expose
-    public String overview;
+    private String overview;
     @SerializedName("vote_average")
     @Expose
-    public double voteAverage;
+    private double voteAverage;
     @SerializedName("release_date")
     @Expose
-    public String releaseDate;
+    private String releaseDate;
     @SerializedName("id")
     @Expose
-    public int id;
+    private int id;
 
     public Movie(String title, String posterPath, String overview, double voteAverage, String releaseDate, int id) {
         this.title = title;
