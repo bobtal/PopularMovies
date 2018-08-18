@@ -1,12 +1,19 @@
 package com.gmail.at.boban.talevski.popularmovies.model;
 
+import android.databinding.BindingAdapter;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.widget.ImageView;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.squareup.picasso.Picasso;
 
 public class Movie implements Parcelable{
+
+    public static final String POSTER_IMAGE_BASE_URL = "http://image.tmdb.org/t/p/" + "w185";
+
     @SerializedName("title")
     @Expose
     private String title;
@@ -25,6 +32,14 @@ public class Movie implements Parcelable{
     @SerializedName("id")
     @Expose
     private int id;
+
+    @BindingAdapter({"image", "error"})
+    public static void loadImage(ImageView view, String imageUrl, Drawable error) {
+        Picasso.get()
+                .load(imageUrl)
+                .error(error)
+                .into(view);
+    }
 
     public Movie(String title, String posterPath, String overview, double voteAverage, String releaseDate, int id) {
         this.title = title;
