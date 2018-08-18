@@ -10,10 +10,73 @@
             type="com.gmail.at.boban.talevski.popularmovies.model.Movie" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context=".ui.DetailsActivity">
 
-    </android.support.constraint.ConstraintLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/details_tv_movie_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:background="@color/colorAccent"
+                android:paddingBottom="24dp"
+                android:paddingEnd="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="24dp"
+                android:text="@{movie.title}"
+                android:textColor="@android:color/white"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:id="@+id/details_iv_movie_poster"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/details_tv_movie_title"
+                android:layout_margin="24dp"
+                android:contentDescription="@string/movie_poster"
+                app:error="@{@drawable/no_image}"
+                app:image="@{movie.POSTER_IMAGE_BASE_URL + movie.posterPath}" />
+
+            <TextView
+                android:id="@+id/details_tv_release_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/details_iv_movie_poster"
+                android:layout_toEndOf="@id/details_iv_movie_poster"
+                android:layout_toRightOf="@id/details_iv_movie_poster"
+                android:text="@{movie.releaseDate}" />
+
+            <TextView
+                android:id="@+id/details_tv_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/details_tv_release_date"
+                android:layout_alignStart="@+id/details_tv_release_date"
+                android:layout_below="@id/details_tv_release_date"
+                android:text="@{movie.voteAverage + `/10`}" />
+
+            <TextView
+                android:layout_margin="16dp"
+                android:id="@+id/details_overview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/details_iv_movie_poster"
+                android:text="@{movie.overview}" />
+
+
+        </RelativeLayout>
+
+    </ScrollView>
 </layout>
