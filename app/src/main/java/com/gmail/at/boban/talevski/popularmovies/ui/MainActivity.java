@@ -1,6 +1,7 @@
 package com.gmail.at.boban.talevski.popularmovies.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import com.gmail.at.boban.talevski.popularmovies.Constants;
 import com.gmail.at.boban.talevski.popularmovies.R;
 import com.gmail.at.boban.talevski.popularmovies.adapter.MovieAdapter;
 import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
+import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
 import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
 
@@ -25,9 +27,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements MovieAdapter.MovieAdapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    public static final String EXTRA_MOVIE = "com.gmail.at.boban.talevski.popularmovies.ui.EXTRA_MOVIE";
 
     private RecyclerView moviesRecyclerView;
     private MovieAdapter adapter;
@@ -130,5 +135,12 @@ public class MainActivity extends AppCompatActivity {
             isAvailable = true;
         }
         return isAvailable;
+    }
+
+    @Override
+    public void onListItemClick(Movie movie) {
+        Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+        intent.putExtra(EXTRA_MOVIE, movie);
+        startActivity(intent);
     }
 }

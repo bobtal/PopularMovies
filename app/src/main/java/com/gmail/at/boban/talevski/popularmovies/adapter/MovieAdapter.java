@@ -18,14 +18,16 @@ import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>{
 
-    public static final String EXTRA_MOVIE = "com.gmail.at.boban.talevski.popularmovies.adapter.EXTRA_MOVIE";
-
     private List<Movie> movieList;
     private Context context;
 
     public MovieAdapter(Context context, List<Movie> movieList) {
         this.context = context;
         this.movieList = movieList;
+    }
+
+    public interface MovieAdapterOnClickHandler {
+        void onListItemClick(Movie movie);
     }
 
     @NonNull
@@ -70,10 +72,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         @Override
         public void onClick(View view) {
-            Intent intent = new Intent(context, DetailsActivity.class);
-            Movie movie = movieList.get(getAdapterPosition());
-            intent.putExtra(EXTRA_MOVIE, movie);
-            context.startActivity(intent);
+            // context is MainActivity which implements the MovieAdapterOnClickHandler interface
+            // so it can be used like this instead of having
+            // a separate field for a click handler/listener
+            MovieAdapterOnClickHandler clickHandler = (MovieAdapterOnClickHandler) context;
+            clickHandler.onListItemClick(movieList.get(getAdapterPosition()));
         }
     }
 }
