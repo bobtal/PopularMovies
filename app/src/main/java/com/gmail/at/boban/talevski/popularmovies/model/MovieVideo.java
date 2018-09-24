@@ -3,7 +3,7 @@ package com.gmail.at.boban.talevski.popularmovies.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-class MovieVideo {
+public class MovieVideo {
     @Expose
     private String id;
     @Expose
