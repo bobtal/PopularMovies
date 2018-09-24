@@ -21,8 +21,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private List<Movie> movieList;
     private Context context;
 
-    public MovieAdapter(Context context, List<Movie> movieList) {
+    final private MovieAdapterOnClickHandler clickHandler;
+
+    public MovieAdapter(Context context, MovieAdapterOnClickHandler clickHandler, List<Movie> movieList) {
         this.context = context;
+        this.clickHandler = clickHandler;
         this.movieList = movieList;
     }
 
@@ -72,10 +75,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         @Override
         public void onClick(View view) {
-            // context is MainActivity which implements the MovieAdapterOnClickHandler interface
-            // so it can be used like this instead of having
-            // a separate field for a click handler/listener
-            MovieAdapterOnClickHandler clickHandler = (MovieAdapterOnClickHandler) context;
             clickHandler.onListItemClick(movieList.get(getAdapterPosition()));
         }
     }

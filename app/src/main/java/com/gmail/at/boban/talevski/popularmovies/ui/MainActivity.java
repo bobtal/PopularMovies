@@ -90,7 +90,10 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
                     Log.d(TAG, "call successful");
-                    adapter = new MovieAdapter(MainActivity.this, response.body().getResults());
+                    adapter = new MovieAdapter(
+                            MainActivity.this,
+                            MainActivity.this,
+                            response.body().getResults());
                     moviesRecyclerView.setAdapter(adapter);
                     int numberOfColumns = getResources().getInteger(R.integer.columns);
                     moviesRecyclerView.setLayoutManager(
