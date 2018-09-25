@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.gmail.at.boban.talevski.popularmovies.Constants;
@@ -34,11 +35,12 @@ public class DetailsActivity extends AppCompatActivity
     private Movie movie;
     private MovieVideosAdapter movieVideosAdapter;
     private MovieReviewsAdapter movieReviewsAdapter;
+    private ActivityDetailsBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final ActivityDetailsBinding binding = DataBindingUtil.setContentView(
+        binding = DataBindingUtil.setContentView(
                 DetailsActivity.this, R.layout.activity_details);
 
         Intent startingIntent = getIntent();
@@ -51,6 +53,8 @@ public class DetailsActivity extends AppCompatActivity
 
         api = RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class);
         if (NetworkUtils.isNetworkAvailable(this)) {
+            showProgressBarReviews();
+            showProgressBarVideos();
             Call<MovieDbVideoReviewResponse> call =
                     api.getVideosAndReviewsForMovie(movie.getId(), Constants.API_KEY, NetworkUtils.APPEND_TO_RESPONSE);
             call.enqueue(new Callback<MovieDbVideoReviewResponse>() {
@@ -67,6 +71,7 @@ public class DetailsActivity extends AppCompatActivity
                     binding.rvMovieVideos.setAdapter(movieVideosAdapter);
                     binding.rvMovieVideos.setLayoutManager(
                             new LinearLayoutManager(DetailsActivity.this));
+                    hideProgressBarVideos();
 
                     // get the reviews from the response and pass them
                     // to the MovieReviewsAdapter constructor
@@ -76,6 +81,7 @@ public class DetailsActivity extends AppCompatActivity
                     binding.rvMovieReviews.setAdapter(movieReviewsAdapter);
                     binding.rvMovieReviews.setLayoutManager(
                             new LinearLayoutManager(DetailsActivity.this));
+                    hideProgressBarReviews();
                 }
 
                 @Override
@@ -91,6 +97,26 @@ public class DetailsActivity extends AppCompatActivity
     private void closeOnError() {
         finish();
         Toast.makeText(this, R.string.movie_data_not_available, Toast.LENGTH_LONG).show();
+    }
+
+    private void hideProgressBarVideos() {
+        binding.loadingProgressVideos.setVisibility(View.INVISIBLE);
+        binding.rvMovieVideos.setVisibility(View.VISIBLE);
+    }
+
+    private void showProgressBarVideos() {
+        binding.loadingProgressVideos.setVisibility(View.VISIBLE);
+        binding.rvMovieVideos.setVisibility(View.INVISIBLE);
+    }
+
+    private void hideProgressBarReviews() {
+        binding.loadingProgressReviews.setVisibility(View.INVISIBLE);
+        binding.rvMovieReviews.setVisibility(View.VISIBLE);
+    }
+
+    private void showProgressBarReviews() {
+        binding.loadingProgressReviews.setVisibility(View.VISIBLE);
+        binding.rvMovieReviews.setVisibility(View.INVISIBLE);
     }
 
     @Override
