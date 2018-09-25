@@ -18,6 +18,7 @@ import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbVideoResponse;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieVideo;
 import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
+import com.gmail.at.boban.talevski.popularmovies.utils.NetworkUtils;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,24 +48,28 @@ public class DetailsActivity extends AppCompatActivity
         }
 
         api = RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class);
-        api.getVideosForMovie(movie.getId(), Constants.API_KEY).enqueue(new Callback<MovieDbVideoResponse>() {
-            @Override
-            public void onResponse(Call<MovieDbVideoResponse> call, Response<MovieDbVideoResponse> response) {
-                Log.d(TAG, "video call success");
-                movieVideosAdapter = new MovieVideosAdapter(
-                        DetailsActivity.this,
-                        DetailsActivity.this,
-                        response.body().getResults());
-                binding.rvMovieVideos.setAdapter(movieVideosAdapter);
-                binding.rvMovieVideos.setLayoutManager(
-                        new LinearLayoutManager(DetailsActivity.this));
-            }
+        if (NetworkUtils.isNetworkAvailable(this)) {
+            api.getVideosForMovie(movie.getId(), Constants.API_KEY).enqueue(new Callback<MovieDbVideoResponse>() {
+                @Override
+                public void onResponse(Call<MovieDbVideoResponse> call, Response<MovieDbVideoResponse> response) {
+                    Log.d(TAG, "video call success");
+                    movieVideosAdapter = new MovieVideosAdapter(
+                            DetailsActivity.this,
+                            DetailsActivity.this,
+                            response.body().getResults());
+                    binding.rvMovieVideos.setAdapter(movieVideosAdapter);
+                    binding.rvMovieVideos.setLayoutManager(
+                            new LinearLayoutManager(DetailsActivity.this));
+                }
 
-            @Override
-            public void onFailure(Call<MovieDbVideoResponse> call, Throwable t) {
-                Log.d(TAG, "video call failure");
-            }
-        });
+                @Override
+                public void onFailure(Call<MovieDbVideoResponse> call, Throwable t) {
+                    Log.d(TAG, "video call failure");
+                }
+            });
+        } else {
+            Toast.makeText(this, R.string.no_network, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void closeOnError() {

@@ -22,6 +22,7 @@ import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
 import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
 import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
+import com.gmail.at.boban.talevski.popularmovies.utils.NetworkUtils;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void loadMovieData(Call<MovieDbResponse> call) {
-        if (isNetworkAvailable()) {
+        if (NetworkUtils.isNetworkAvailable(this)) {
             showProgressBar();
             call.enqueue(new Callback<MovieDbResponse>() {
                 @Override
@@ -127,18 +128,6 @@ public class MainActivity extends AppCompatActivity
         moviesRecyclerView.setVisibility(View.INVISIBLE);
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager manager =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-
-        boolean isAvailable = false;
-
-        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
-            isAvailable = true;
-        }
-        return isAvailable;
-    }
 
     @Override
     public void onListItemClick(Movie movie) {
