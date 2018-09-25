@@ -2,6 +2,7 @@ package com.gmail.at.boban.talevski.popularmovies.ui;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -79,6 +80,8 @@ public class DetailsActivity extends AppCompatActivity
 
     @Override
     public void onListItemClick(MovieVideo movieVideo) {
-
+        Uri uri = Uri.parse("https://www.youtube.com/watch?v=" + movieVideo.getKey());
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
     }
 }
