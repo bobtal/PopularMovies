@@ -82,6 +82,10 @@ public class DetailsActivity extends AppCompatActivity
     public void onListItemClick(MovieVideo movieVideo) {
         Uri uri = Uri.parse("https://www.youtube.com/watch?v=" + movieVideo.getKey());
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, R.string.no_app_for_video, Toast.LENGTH_LONG).show();
+        }
     }
 }

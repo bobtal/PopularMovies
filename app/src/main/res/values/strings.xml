@@ -9,4 +9,5 @@
     <string name="movie_data_not_available">Movie data not available</string>
     <string name="trailer_name_placeholder">Awesome Trailer</string>
     <string name="trailers">Trailers:</string>
+    <string name="no_app_for_video">Sorry, can\'t open the video, no appropriate application is available on your device</string>
 </resources>
