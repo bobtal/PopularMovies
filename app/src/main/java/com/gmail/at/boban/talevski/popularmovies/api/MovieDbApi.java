@@ -1,9 +1,7 @@
 package com.gmail.at.boban.talevski.popularmovies.api;
 
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
-import com.gmail.at.boban.talevski.popularmovies.model.MovieDbVideoResponse;
-
-import java.util.List;
+import com.gmail.at.boban.talevski.popularmovies.model.MovieDbVideoReviewResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -18,6 +16,9 @@ public interface MovieDbApi {
     @GET("movie/top_rated")
     Call<MovieDbResponse> getTopRatedMovies(@Query("api_key") String apiKey);
 
-    @GET("movie/{id}/videos")
-    Call<MovieDbVideoResponse> getVideosForMovie(@Path("id") int movieId, @Query("api_key") String apiKey);
+    @GET("movie/{id}")
+    Call<MovieDbVideoReviewResponse> getVideosAndReviewsForMovie(
+            @Path("id") int movieId,
+            @Query("api_key") String apiKey,
+            @Query("append_to_response") String appendToResponse);
 }

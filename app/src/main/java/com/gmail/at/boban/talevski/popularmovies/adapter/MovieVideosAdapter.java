@@ -56,7 +56,7 @@ public class MovieVideosAdapter
     public class MovieVideosViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener{
 
-        TextView videoName;
+        private TextView videoName;
 
         public MovieVideosViewHolder(View itemView) {
             super(itemView);

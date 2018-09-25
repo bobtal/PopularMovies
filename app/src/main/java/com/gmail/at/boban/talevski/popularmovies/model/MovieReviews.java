@@ -1,20 +1,18 @@
 package com.gmail.at.boban.talevski.popularmovies.model;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class MovieDbResponse {
+public class MovieReviews {
     @Expose
-    private
-    List<Movie> results;
+    private List<MovieReview> results;
 
-    public List<Movie> getResults() {
+    public List<MovieReview> getResults() {
         return results;
     }
 
-    public void setResults(List<Movie> results) {
+    public void setResults(List<MovieReview> results) {
         this.results = results;
     }
 }

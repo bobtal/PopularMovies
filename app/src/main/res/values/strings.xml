@@ -1,13 +1,24 @@
 <resources>
     <string name="app_name">Popular Movies</string>
     <string name="movie_poster">Movie Poster</string>
-    <string name="error_displaying_movies">Problem displaying movies. Check your internet connection</string>
-    <string name="no_network">No network connectivity. Please check your network connection and try again.</string>
     <string name="most_popular">Most Popular</string>
     <string name="top_rated">Top Rated</string>
     <string name="movie_details">Movie Details</string>
-    <string name="movie_data_not_available">Movie data not available</string>
-    <string name="trailer_name_placeholder">Awesome Trailer</string>
+
     <string name="trailers">Trailers:</string>
+    <string name="reviews">Reviews:</string>
+
+    <string name="trailer_name_placeholder">Awesome Trailer</string>
+    <string name="review_sample_placeholder">What an awesome movie. Lorem ipsum dolor sit amet, consectetur
+        adipiscing elit. Morbi et sodales leo, vel venenatis diam. Vestibulum ultricies mattis mi sit amet feugiat.
+        Quisque aliquam tellus non mattis tempor. Aenean accumsan elit orci, at rutrum dui gravida eget.
+        Quisque risus purus, volutpat eu ligula et, tristique finibus erat.</string>
+
+
+    <!--Error messages-->
     <string name="no_app_for_video">Sorry, can\'t open the video, no appropriate application is available on your device</string>
+    <string name="error_displaying_movies">Problem displaying movies. Check your internet connection</string>
+    <string name="no_network">No network connectivity. Please check your network connection and try again.</string>
+    <string name="movie_data_not_available">Movie data not available</string>
+
 </resources>
