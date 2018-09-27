@@ -18,9 +18,9 @@ public class MovieEntity {
     @ColumnInfo(name = "vote_average")
     private double voteAverage;
     @ColumnInfo(name = "release_date")
-    private Date releaseDate;
+    private String releaseDate;
 
-    public MovieEntity(int id, String title, String posterPath, String overview, double voteAverage, Date releaseDate) {
+    public MovieEntity(int id, String title, String posterPath, String overview, double voteAverage, String releaseDate) {
         this.id = id;
         this.title = title;
         this.posterPath = posterPath;
@@ -69,11 +69,11 @@ public class MovieEntity {
         this.voteAverage = voteAverage;
     }
 
-    public Date getReleaseDate() {
+    public String getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
+    public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
     }
 }
