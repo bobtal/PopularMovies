@@ -16,10 +16,26 @@ buildscript {
     }
 }
 
+plugins {
+    id 'com.gradle.build-scan' version '1.16'
+}
+
+
+buildScan {
+    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+    licenseAgree = 'yes'
+}
+
 allprojects {
     repositories {
         google()
         jcenter()
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xmaxerrs" << "5000"
+        }
     }
 }
 
