@@ -5,17 +5,19 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
+import com.gmail.at.boban.talevski.popularmovies.model.Movie;
+
 import java.util.List;
 
 @Dao
 public interface MovieDao {
 
     @Query("SELECT * FROM movies")
-    List<MovieEntity> loadAllMovies();
+    List<Movie> loadAllMovies();
 
     @Insert
-    void insertMovie(MovieEntity movieEntity);
+    void insertMovie(Movie movie);
 
     @Delete
-    void deleteMovie(MovieEntity movieEntity);
+    void deleteMovie(Movie movie);
 }

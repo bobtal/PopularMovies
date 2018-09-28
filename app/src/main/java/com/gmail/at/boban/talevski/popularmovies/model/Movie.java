@@ -1,5 +1,8 @@
 package com.gmail.at.boban.talevski.popularmovies.model;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
@@ -10,28 +13,33 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.squareup.picasso.Picasso;
 
+@Entity(tableName = "movies")
 public class Movie implements Parcelable{
 
     public static final String POSTER_IMAGE_BASE_URL = "http://image.tmdb.org/t/p/" + "w185";
 
+    @SerializedName("id")
+    @Expose
+    @PrimaryKey
+    private int id;
     @SerializedName("title")
     @Expose
     private String title;
+    @ColumnInfo(name = "poster_path")
     @SerializedName("poster_path")
     @Expose
     private String posterPath;
     @SerializedName("overview")
     @Expose
     private String overview;
+    @ColumnInfo(name = "vote_average")
     @SerializedName("vote_average")
     @Expose
     private double voteAverage;
+    @ColumnInfo(name = "release_date")
     @SerializedName("release_date")
     @Expose
     private String releaseDate;
-    @SerializedName("id")
-    @Expose
-    private int id;
 
     @BindingAdapter({"image", "error"})
     public static void loadImage(ImageView view, String imageUrl, Drawable error) {
