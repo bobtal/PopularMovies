@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.gmail.at.boban.talevski.popularmovies.Constants;
@@ -15,6 +17,7 @@ import com.gmail.at.boban.talevski.popularmovies.R;
 import com.gmail.at.boban.talevski.popularmovies.adapter.MovieReviewsAdapter;
 import com.gmail.at.boban.talevski.popularmovies.adapter.MovieVideosAdapter;
 import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
+import com.gmail.at.boban.talevski.popularmovies.database.AppDatabase;
 import com.gmail.at.boban.talevski.popularmovies.databinding.ActivityDetailsBinding;
 import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbVideoReviewResponse;
@@ -36,6 +39,8 @@ public class DetailsActivity extends AppCompatActivity
     private MovieVideosAdapter movieVideosAdapter;
     private MovieReviewsAdapter movieReviewsAdapter;
     private ActivityDetailsBinding binding;
+    private AppDatabase db;
+    private boolean isFavoriteMovie = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +48,14 @@ public class DetailsActivity extends AppCompatActivity
         binding = DataBindingUtil.setContentView(
                 DetailsActivity.this, R.layout.activity_details);
 
+        db = AppDatabase.getInstance(getApplicationContext());
+
         Intent startingIntent = getIntent();
         if (startingIntent != null && startingIntent.hasExtra(MainActivity.EXTRA_MOVIE)) {
             movie = startingIntent.getParcelableExtra(MainActivity.EXTRA_MOVIE);
             binding.setMovie(movie);
+
+            initFavoriteButton();
         } else {
             closeOnError();
         }
@@ -128,5 +137,36 @@ public class DetailsActivity extends AppCompatActivity
         } else {
             Toast.makeText(this, R.string.no_app_for_video, Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void initFavoriteButton() {
+        Movie movieFromDatabase = db.movieDao().loadMovieById(movie.getId());
+        if (movieFromDatabase != null) {
+            isFavoriteMovie = true;
+            binding.favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_star_yellow_48dp));
+        } else {
+            isFavoriteMovie = false;
+            binding.favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_star_border_black_48dp));
+        }
+    }
+
+    public void onToggleFavorite(View view) {
+        if (isFavoriteMovie) {
+            ((ImageButton)view).setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_star_border_black_48dp));
+            isFavoriteMovie = false;
+            removeMovieFromFavorites(movie);
+        } else {
+            ((ImageButton) view).setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_star_yellow_48dp));
+            isFavoriteMovie = true;
+            addMovieToFavorites(movie);
+        }
+    }
+
+    private void removeMovieFromFavorites(Movie movie) {
+        db.movieDao().deleteMovie(movie);
+    }
+
+    private void addMovieToFavorites(Movie movie) {
+        db.movieDao().insertMovie(movie);
     }
 }

@@ -66,6 +66,16 @@
                 android:layout_below="@id/details_tv_release_date"
                 android:text="@{movie.voteAverage + `/10`}" />
 
+            <ImageButton android:id="@+id/favorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_border_black_48dp"
+                android:background="#00ffffff"
+                android:onClick="onToggleFavorite"
+                android:layout_alignLeft="@id/details_tv_rating"
+                android:layout_below="@id/details_tv_rating"
+                android:layout_alignStart="@id/details_tv_rating" />
+
             <TextView
                 android:id="@+id/details_overview"
                 android:layout_width="wrap_content"
