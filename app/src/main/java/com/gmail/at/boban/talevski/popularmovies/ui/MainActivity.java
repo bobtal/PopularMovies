@@ -1,11 +1,8 @@
 package com.gmail.at.boban.talevski.popularmovies.ui;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,10 +16,13 @@ import com.gmail.at.boban.talevski.popularmovies.Constants;
 import com.gmail.at.boban.talevski.popularmovies.R;
 import com.gmail.at.boban.talevski.popularmovies.adapter.MovieAdapter;
 import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
+import com.gmail.at.boban.talevski.popularmovies.database.AppDatabase;
 import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
 import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
 import com.gmail.at.boban.talevski.popularmovies.utils.NetworkUtils;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -70,8 +70,17 @@ public class MainActivity extends AppCompatActivity
             case R.id.action_top_rated:
                 loadTopRatedMovies();
                 return true;
+
+            case R.id.action_favorites:
+                loadFavoriteMovies();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void loadFavoriteMovies() {
+        List<Movie> favoriteMovies = AppDatabase.getInstance(this).movieDao().loadAllMovies();
+        populateGridWithMovies(favoriteMovies);
     }
 
     private void loadMostPopularMovies() {
@@ -91,17 +100,11 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
                     Log.d(TAG, "call successful");
-                    adapter = new MovieAdapter(
-                            MainActivity.this,
-                            MainActivity.this,
-                            response.body().getResults());
-                    moviesRecyclerView.setAdapter(adapter);
-                    int numberOfColumns = getResources().getInteger(R.integer.columns);
-                    moviesRecyclerView.setLayoutManager(
-                            new GridLayoutManager(MainActivity.this, numberOfColumns));
-                    moviesRecyclerView.setHasFixedSize(true);
+                    List<Movie> results = response.body().getResults();
 
                     hideProgressBar();
+
+                    populateGridWithMovies(results);
                 }
 
                 @Override
@@ -116,6 +119,19 @@ public class MainActivity extends AppCompatActivity
         else {
             Toast.makeText(this, R.string.no_network, Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void populateGridWithMovies(List<Movie> results) {
+
+        adapter = new MovieAdapter(
+                MainActivity.this,
+                MainActivity.this,
+                results);
+        moviesRecyclerView.setAdapter(adapter);
+        int numberOfColumns = getResources().getInteger(R.integer.columns);
+        moviesRecyclerView.setLayoutManager(
+                new GridLayoutManager(MainActivity.this, numberOfColumns));
+        moviesRecyclerView.setHasFixedSize(true);
     }
 
     private void hideProgressBar() {

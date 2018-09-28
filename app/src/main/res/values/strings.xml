@@ -3,6 +3,7 @@
     <string name="movie_poster">Movie Poster</string>
     <string name="most_popular">Most Popular</string>
     <string name="top_rated">Top Rated</string>
+    <string name="favorites">Favorites</string>
     <string name="movie_details">Movie Details</string>
 
     <string name="trailers">Trailers:</string>
