@@ -23,6 +23,7 @@ import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbVideoReviewResponse;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieVideo;
 import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
+import com.gmail.at.boban.talevski.popularmovies.utils.AppExecutors;
 import com.gmail.at.boban.talevski.popularmovies.utils.NetworkUtils;
 
 import retrofit2.Call;
@@ -140,14 +141,26 @@ public class DetailsActivity extends AppCompatActivity
     }
 
     private void initFavoriteButton() {
-        Movie movieFromDatabase = db.movieDao().loadMovieById(movie.getId());
-        if (movieFromDatabase != null) {
-            isFavoriteMovie = true;
-            binding.favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_star_yellow_48dp));
-        } else {
-            isFavoriteMovie = false;
-            binding.favorite.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_star_border_black_48dp));
-        }
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final Movie movieFromDatabase = db.movieDao().loadMovieById(movie.getId());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (movieFromDatabase != null) {
+                            isFavoriteMovie = true;
+                            binding.favorite.setImageDrawable(ContextCompat.getDrawable(
+                                    DetailsActivity.this, R.drawable.ic_star_yellow_48dp));
+                        } else {
+                            isFavoriteMovie = false;
+                            binding.favorite.setImageDrawable(ContextCompat.getDrawable(
+                                    DetailsActivity.this, R.drawable.ic_star_border_black_48dp));
+                        }
+                    }
+                });
+            }
+        });
     }
 
     public void onToggleFavorite(View view) {
@@ -162,11 +175,21 @@ public class DetailsActivity extends AppCompatActivity
         }
     }
 
-    private void removeMovieFromFavorites(Movie movie) {
-        db.movieDao().deleteMovie(movie);
+    private void removeMovieFromFavorites(final Movie movie) {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                db.movieDao().deleteMovie(movie);
+            }
+        });
     }
 
-    private void addMovieToFavorites(Movie movie) {
-        db.movieDao().insertMovie(movie);
+    private void addMovieToFavorites(final Movie movie) {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                db.movieDao().insertMovie(movie);
+            }
+        });
     }
 }

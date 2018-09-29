@@ -20,6 +20,7 @@ import com.gmail.at.boban.talevski.popularmovies.database.AppDatabase;
 import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
 import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
+import com.gmail.at.boban.talevski.popularmovies.utils.AppExecutors;
 import com.gmail.at.boban.talevski.popularmovies.utils.NetworkUtils;
 
 import java.util.List;
@@ -79,8 +80,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void loadFavoriteMovies() {
-        List<Movie> favoriteMovies = AppDatabase.getInstance(this).movieDao().loadAllMovies();
-        populateGridWithMovies(favoriteMovies);
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final List<Movie> favoriteMovies = AppDatabase.getInstance(MainActivity.this)
+                        .movieDao().loadAllMovies();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        populateGridWithMovies(favoriteMovies);
+                    }
+                });
+            }
+        });
     }
 
     private void loadMostPopularMovies() {
