@@ -1,7 +1,11 @@
 package com.gmail.at.boban.talevski.popularmovies.ui;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +26,7 @@ import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
 import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
 import com.gmail.at.boban.talevski.popularmovies.utils.AppExecutors;
 import com.gmail.at.boban.talevski.popularmovies.utils.NetworkUtils;
+import com.gmail.at.boban.talevski.popularmovies.viewmodel.MainViewModel;
 
 import java.util.List;
 
@@ -50,7 +55,7 @@ public class MainActivity extends AppCompatActivity
         loadingProgress = findViewById(R.id.loading_progress);
 
         api = RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class);
-        loadMostPopularMovies();
+        loadFavoriteMovies();
     }
 
     @Override
@@ -80,17 +85,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void loadFavoriteMovies() {
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
             @Override
-            public void run() {
-                final List<Movie> favoriteMovies = AppDatabase.getInstance(MainActivity.this)
-                        .movieDao().loadAllMovies();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        populateGridWithMovies(favoriteMovies);
-                    }
-                });
+            public void onChanged(@Nullable List<Movie> movies) {
+                Log.d(TAG, "Updating list of movies from LiveData in ViewModel");
+                populateGridWithMovies(movies);
             }
         });
     }
