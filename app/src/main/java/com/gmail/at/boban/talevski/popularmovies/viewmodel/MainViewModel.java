@@ -1,10 +1,7 @@
 package com.gmail.at.boban.talevski.popularmovies.viewmodel;
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
@@ -20,32 +17,39 @@ public class MainViewModel extends ViewModel {
 
     private static final String TAG = MainViewModel.class.getSimpleName();
 
-    private LiveData<List<Movie>> movies;
+    private LiveData<List<Movie>> popularMovies;
+    private LiveData<List<Movie>> topRatedMovies;
+    private LiveData<List<Movie>> favoriteMovies;
+    private final MovieRepository movieRepository;
 
-    public MainViewModel(AppDatabase database, MovieType movieType) {
+    public MainViewModel(AppDatabase database) {
         Log.d(TAG, "Actively retrieving tasks from the Database");
 
-        MovieRepository movieRepository = new MovieRepository(
+        movieRepository = new MovieRepository(
                 RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class),
                 database.movieDao());
 
-        switch (movieType) {
-            case POPULAR:
-                movies = movieRepository.getPopularMovies();
-                break;
-
-            case TOP_RATED:
-                movies = movieRepository.getTopRatedMovies();
-                break;
-
-            case FAVORITES:
-                movies = movieRepository.getFavoriteMovies();
-                break;
-        }
-
     }
 
-    public LiveData<List<Movie>> getMovies() {
-        return movies;
+    public LiveData<List<Movie>> getMovies(MovieType movieType) {
+        switch (movieType) {
+            case POPULAR:
+                if (popularMovies == null) {
+                    popularMovies = movieRepository.getPopularMovies();
+                }
+                return popularMovies;
+
+            case TOP_RATED:
+                if (topRatedMovies == null) {
+                    topRatedMovies = movieRepository.getTopRatedMovies();
+                }
+                return topRatedMovies;
+
+            default: // case FAVORITES:
+                if (favoriteMovies == null) {
+                    favoriteMovies = movieRepository.getFavoriteMovies();
+                }
+                return favoriteMovies;
+        }
     }
 }

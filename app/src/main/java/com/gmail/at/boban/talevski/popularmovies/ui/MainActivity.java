@@ -59,25 +59,34 @@ public class MainActivity extends AppCompatActivity
         moviesRecyclerView = findViewById(R.id.rv_movies);
         loadingProgress = findViewById(R.id.loading_progress);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_MOVIE_TYPE)) {
-            movieType = (MovieType) savedInstanceState.getSerializable(EXTRA_MOVIE_TYPE);
-        } else {
-            // show popular movies by default
+        // if it's a fresh activity creation, show favorite movies by default
+        if (savedInstanceState == null) {
             movieType = MovieType.FAVORITES;
+            setupViewModel();
         }
+    }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(EXTRA_MOVIE_TYPE, movieType);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        movieType = (MovieType) savedInstanceState.getSerializable(EXTRA_MOVIE_TYPE);
         setupViewModel();
     }
 
     private void setupViewModel() {
         MainViewModelFactory factory =
-                new MainViewModelFactory(AppDatabase.getInstance(this), movieType);
+                new MainViewModelFactory(AppDatabase.getInstance(this));
         final MainViewModel viewModel =
                 ViewModelProviders.of(this, factory).get(MainViewModel.class);
-        viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
+        viewModel.getMovies(movieType).observe(this, new Observer<List<Movie>>() {
             @Override
             public void onChanged(@Nullable List<Movie> movies) {
-//                viewModel.getMovies().removeObserver(this);
                 Log.d(TAG, "Updating list of movies from LiveData in ViewModel");
                 populateGridWithMovies(movies);
             }
