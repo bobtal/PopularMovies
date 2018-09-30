@@ -25,8 +25,10 @@ import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
 import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
 import com.gmail.at.boban.talevski.popularmovies.utils.AppExecutors;
+import com.gmail.at.boban.talevski.popularmovies.utils.MovieType;
 import com.gmail.at.boban.talevski.popularmovies.utils.NetworkUtils;
 import com.gmail.at.boban.talevski.popularmovies.viewmodel.MainViewModel;
+import com.gmail.at.boban.talevski.popularmovies.viewmodel.MainViewModelFactory;
 
 import java.util.List;
 
@@ -40,11 +42,14 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = MainActivity.class.getSimpleName();
 
     public static final String EXTRA_MOVIE = "com.gmail.at.boban.talevski.popularmovies.ui.EXTRA_MOVIE";
+    public static final String EXTRA_MOVIE_TYPE = "com.gmail.at.boban.talevski.popularmovies.ui.EXTRA_MOVIE_TYPE";
+
+    private MovieAdapter adapter;
+
+    private MovieType movieType;
 
     private RecyclerView moviesRecyclerView;
-    private MovieAdapter adapter;
-    private MovieDbApi api;
-    ProgressBar loadingProgress;
+    private ProgressBar loadingProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +59,29 @@ public class MainActivity extends AppCompatActivity
         moviesRecyclerView = findViewById(R.id.rv_movies);
         loadingProgress = findViewById(R.id.loading_progress);
 
-        api = RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class);
-        loadFavoriteMovies();
+        if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_MOVIE_TYPE)) {
+            movieType = (MovieType) savedInstanceState.getSerializable(EXTRA_MOVIE_TYPE);
+        } else {
+            // show popular movies by default
+            movieType = MovieType.FAVORITES;
+        }
+
+        setupViewModel();
+    }
+
+    private void setupViewModel() {
+        MainViewModelFactory factory =
+                new MainViewModelFactory(AppDatabase.getInstance(this), movieType);
+        final MainViewModel viewModel =
+                ViewModelProviders.of(this, factory).get(MainViewModel.class);
+        viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(@Nullable List<Movie> movies) {
+//                viewModel.getMovies().removeObserver(this);
+                Log.d(TAG, "Updating list of movies from LiveData in ViewModel");
+                populateGridWithMovies(movies);
+            }
+        });
     }
 
     @Override
@@ -70,71 +96,24 @@ public class MainActivity extends AppCompatActivity
 
         switch (menuItemId) {
             case R.id.action_popular:
-                loadMostPopularMovies();
+                movieType = MovieType.POPULAR;
+                setupViewModel();
                 return true;
 
             case R.id.action_top_rated:
-                loadTopRatedMovies();
+                movieType = MovieType.TOP_RATED;
+                setupViewModel();
                 return true;
 
             case R.id.action_favorites:
-                loadFavoriteMovies();
+                movieType = MovieType.FAVORITES;
+                setupViewModel();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadFavoriteMovies() {
-        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
-            @Override
-            public void onChanged(@Nullable List<Movie> movies) {
-                Log.d(TAG, "Updating list of movies from LiveData in ViewModel");
-                populateGridWithMovies(movies);
-            }
-        });
-    }
-
-    private void loadMostPopularMovies() {
-        Call<MovieDbResponse> call = api.getPopularMovies(Constants.API_KEY);
-        loadMovieData(call);
-    }
-
-    private void loadTopRatedMovies() {
-        Call<MovieDbResponse> call = api.getTopRatedMovies(Constants.API_KEY);
-        loadMovieData(call);
-    }
-
-    private void loadMovieData(Call<MovieDbResponse> call) {
-        if (NetworkUtils.isNetworkAvailable(this)) {
-            showProgressBar();
-            call.enqueue(new Callback<MovieDbResponse>() {
-                @Override
-                public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
-                    Log.d(TAG, "call successful");
-                    List<Movie> results = response.body().getResults();
-
-                    hideProgressBar();
-
-                    populateGridWithMovies(results);
-                }
-
-                @Override
-                public void onFailure(Call<MovieDbResponse> call, Throwable t) {
-                    Log.d(TAG, "call unsuccessful");
-                    Toast.makeText(MainActivity.this, R.string.error_displaying_movies, Toast.LENGTH_LONG).show();
-
-                    hideProgressBar();
-                }
-            });
-        }
-        else {
-            Toast.makeText(this, R.string.no_network, Toast.LENGTH_LONG).show();
-        }
-    }
-
     private void populateGridWithMovies(List<Movie> results) {
-
         adapter = new MovieAdapter(
                 MainActivity.this,
                 MainActivity.this,
@@ -155,7 +134,6 @@ public class MainActivity extends AppCompatActivity
         loadingProgress.setVisibility(View.VISIBLE);
         moviesRecyclerView.setVisibility(View.INVISIBLE);
     }
-
 
     @Override
     public void onListItemClick(Movie movie) {
