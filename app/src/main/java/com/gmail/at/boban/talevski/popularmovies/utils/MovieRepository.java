@@ -14,6 +14,7 @@ import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbVideoReviewResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -41,8 +42,8 @@ public class MovieRepository {
     }
 
     public LiveData<List<Movie>> getPopularMovies() {
+        final MutableLiveData<List<Movie>> results = new MutableLiveData<>();
         if (NetworkUtils.isNetworkAvailable((Context)errorHandler)) {
-            final MutableLiveData<List<Movie>> results = new MutableLiveData<>();
             movieDbApi.getPopularMovies(Constants.API_KEY).enqueue(new Callback<MovieDbResponse>() {
                 @Override
                 public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
@@ -56,16 +57,18 @@ public class MovieRepository {
                     errorHandler.handleError(((Activity) errorHandler).getString(R.string.error_displaying_movies));
                 }
             });
-            return results;
         } else {
             errorHandler.handleError(((Activity) errorHandler).getString(R.string.no_network));
-            return null;
+            // returning an empty list to avoid NPE on the observe call
+            List<Movie> emptyList = new ArrayList<>();
+            results.setValue(emptyList);
         }
+        return results;
     }
 
     public LiveData<List<Movie>> getTopRatedMovies() {
+        final MutableLiveData<List<Movie>> results = new MutableLiveData<>();
         if (NetworkUtils.isNetworkAvailable((Context)errorHandler)) {
-            final MutableLiveData<List<Movie>> results = new MutableLiveData<>();
             movieDbApi.getTopRatedMovies(Constants.API_KEY).enqueue(new Callback<MovieDbResponse>() {
                 @Override
                 public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
@@ -79,16 +82,18 @@ public class MovieRepository {
                     errorHandler.handleError(((Activity) errorHandler).getString(R.string.error_displaying_movies));
                 }
             });
-            return results;
         } else {
             errorHandler.handleError(((Activity) errorHandler).getString(R.string.no_network));
-            return null;
+            // returning an empty list to avoid NPE on the observe call
+            List<Movie> emptyList = new ArrayList<>();
+            results.setValue(emptyList);
         }
+        return results;
     }
 
     public LiveData<MovieDbVideoReviewResponse> getMovieVideosAndReviews(int movieId) {
+        final MutableLiveData<MovieDbVideoReviewResponse> results = new MutableLiveData<>();
         if (NetworkUtils.isNetworkAvailable((Context)errorHandler)) {
-            final MutableLiveData<MovieDbVideoReviewResponse> results = new MutableLiveData<>();
             movieDbApi.getVideosAndReviewsForMovie(movieId, Constants.API_KEY,
                     NetworkUtils.APPEND_TO_RESPONSE).enqueue(new Callback<MovieDbVideoReviewResponse>() {
                 @Override
@@ -102,11 +107,13 @@ public class MovieRepository {
                     errorHandler.handleError(((Activity) errorHandler).getString(R.string.movie_data_not_available));
                 }
             });
-            return results;
         } else {
             errorHandler.handleError(((Activity) errorHandler).getString(R.string.no_network));
-            return null;
+            // returning an empty response to avoid NPE on the observe call
+            MovieDbVideoReviewResponse emptyResponse = new MovieDbVideoReviewResponse();
+            results.setValue(emptyResponse);
         }
+        return results;
     }
 
     public LiveData<List<Movie>> getFavoriteMovies() {

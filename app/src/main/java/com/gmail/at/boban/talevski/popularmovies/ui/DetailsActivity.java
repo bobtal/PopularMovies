@@ -79,25 +79,29 @@ public class DetailsActivity extends AppCompatActivity
     }
 
     private void populateMovieVideosAndReviewsRecyclerViews(MovieDbVideoReviewResponse movieDbVideoReviewResponse) {
-        // get the videos from the response and pass them
-        // to the MovieVideosAdapter constructor
-        movieVideosAdapter = new MovieVideosAdapter(
-                DetailsActivity.this,
-                DetailsActivity.this,
-                movieDbVideoReviewResponse.getVideos().getResults());
-        binding.rvMovieVideos.setAdapter(movieVideosAdapter);
-        binding.rvMovieVideos.setLayoutManager(
-                new LinearLayoutManager(DetailsActivity.this));
+        if (movieDbVideoReviewResponse.getVideos() != null) {
+            // get the videos from the response and pass them
+            // to the MovieVideosAdapter constructor
+            movieVideosAdapter = new MovieVideosAdapter(
+                    DetailsActivity.this,
+                    DetailsActivity.this,
+                    movieDbVideoReviewResponse.getVideos().getResults());
+            binding.rvMovieVideos.setAdapter(movieVideosAdapter);
+            binding.rvMovieVideos.setLayoutManager(
+                    new LinearLayoutManager(DetailsActivity.this));
+        }
         hideProgressBarVideos();
 
-        // get the reviews from the response and pass them
-        // to the MovieReviewsAdapter constructor
-        movieReviewsAdapter = new MovieReviewsAdapter(
-                DetailsActivity.this,
-                movieDbVideoReviewResponse.getReviews().getResults());
-        binding.rvMovieReviews.setAdapter(movieReviewsAdapter);
-        binding.rvMovieReviews.setLayoutManager(
-                new LinearLayoutManager(DetailsActivity.this));
+        if (movieDbVideoReviewResponse.getReviews() != null) {
+            // get the reviews from the response and pass them
+            // to the MovieReviewsAdapter constructor
+            movieReviewsAdapter = new MovieReviewsAdapter(
+                    DetailsActivity.this,
+                    movieDbVideoReviewResponse.getReviews().getResults());
+            binding.rvMovieReviews.setAdapter(movieReviewsAdapter);
+            binding.rvMovieReviews.setLayoutManager(
+                    new LinearLayoutManager(DetailsActivity.this));
+        }
         hideProgressBarReviews();
     }
 
