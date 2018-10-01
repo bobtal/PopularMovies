@@ -24,6 +24,7 @@ import com.gmail.at.boban.talevski.popularmovies.model.MovieDbVideoReviewRespons
 import com.gmail.at.boban.talevski.popularmovies.model.MovieVideo;
 import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
 import com.gmail.at.boban.talevski.popularmovies.utils.AppExecutors;
+import com.gmail.at.boban.talevski.popularmovies.utils.MovieRepository;
 import com.gmail.at.boban.talevski.popularmovies.utils.NetworkUtils;
 
 import retrofit2.Call;
@@ -31,7 +32,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DetailsActivity extends AppCompatActivity
-        implements MovieVideosAdapter.MovieVideosAdapterClickHandler {
+        implements MovieVideosAdapter.MovieVideosAdapterClickHandler,
+        MovieRepository.ErrorHandlerActivity {
 
     private static final String TAG = DetailsActivity.class.getSimpleName();
 
@@ -60,6 +62,8 @@ public class DetailsActivity extends AppCompatActivity
         } else {
             closeOnError();
         }
+
+
 
         api = RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class);
         if (NetworkUtils.isNetworkAvailable(this)) {
@@ -191,5 +195,12 @@ public class DetailsActivity extends AppCompatActivity
                 db.movieDao().insertMovie(movie);
             }
         });
+    }
+
+    @Override
+    public void handleError(String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        binding.loadingProgressReviews.setVisibility(View.INVISIBLE);
+        binding.loadingProgressVideos.setVisibility(View.INVISIBLE);
     }
 }

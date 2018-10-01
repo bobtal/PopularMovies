@@ -11,10 +11,10 @@ public class DetailsViewModelFactory extends ViewModelProvider.NewInstanceFactor
 
     private final AppDatabase database;
     private int movieId;
-    private final MovieRepository.ErrorHandler errorHandler;
+    private final MovieRepository.ErrorHandlerActivity errorHandler;
 
     public DetailsViewModelFactory(AppDatabase database, int movieId,
-                                   MovieRepository.ErrorHandler errorHandler) {
+                                   MovieRepository.ErrorHandlerActivity errorHandler) {
         this.database = database;
         this.movieId = movieId;
         this.errorHandler = errorHandler;

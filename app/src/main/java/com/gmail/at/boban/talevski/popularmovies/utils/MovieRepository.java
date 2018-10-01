@@ -75,6 +75,24 @@ public class MovieRepository {
         return results;
     }
 
+    public LiveData<MovieDbVideoReviewResponse> getMovieVideosAndReviews(int movieId) {
+        final MutableLiveData<MovieDbVideoReviewResponse> results = new MutableLiveData<>();
+        movieDbApi.getVideosAndReviewsForMovie(movieId, Constants.API_KEY,
+                NetworkUtils.APPEND_TO_RESPONSE).enqueue(new Callback<MovieDbVideoReviewResponse>() {
+            @Override
+            public void onResponse(Call<MovieDbVideoReviewResponse> call, Response<MovieDbVideoReviewResponse> response) {
+                Log.d(TAG, "Fetched network response for movie videos and reviews");
+                results.setValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<MovieDbVideoReviewResponse> call, Throwable t) {
+                errorHandler.handleError(((Activity)errorHandler).getString(R.string.movie_data_not_available));
+            }
+        });
+        return results;
+    }
+
     public LiveData<List<Movie>> getFavoriteMovies() {
         Log.d(TAG, "Fetched database response for favorite movies");
         return movieDao.loadAllMovies();
