@@ -3,6 +3,7 @@ package com.gmail.at.boban.talevski.popularmovies.utils;
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
 import android.util.Log;
 
 import com.gmail.at.boban.talevski.popularmovies.Constants;
@@ -40,57 +41,72 @@ public class MovieRepository {
     }
 
     public LiveData<List<Movie>> getPopularMovies() {
-        final MutableLiveData<List<Movie>> results = new MutableLiveData<>();
-        movieDbApi.getPopularMovies(Constants.API_KEY).enqueue(new Callback<MovieDbResponse>() {
-            @Override
-            public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
-                Log.d(TAG, "Fetched network response for popular movies");
-                results.setValue(response.body().getResults());
-            }
+        if (NetworkUtils.isNetworkAvailable((Context)errorHandler)) {
+            final MutableLiveData<List<Movie>> results = new MutableLiveData<>();
+            movieDbApi.getPopularMovies(Constants.API_KEY).enqueue(new Callback<MovieDbResponse>() {
+                @Override
+                public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
+                    Log.d(TAG, "Fetched network response for popular movies");
+                    results.setValue(response.body().getResults());
+                }
 
-            @Override
-            public void onFailure(Call<MovieDbResponse> call, Throwable t) {
-                Log.d(TAG, "Error fetching popular movie data from network");
-                errorHandler.handleError(((Activity)errorHandler).getString(R.string.error_displaying_movies));
-            }
-        });
-        return results;
+                @Override
+                public void onFailure(Call<MovieDbResponse> call, Throwable t) {
+                    Log.d(TAG, "Error fetching popular movie data from network");
+                    errorHandler.handleError(((Activity) errorHandler).getString(R.string.error_displaying_movies));
+                }
+            });
+            return results;
+        } else {
+            errorHandler.handleError(((Activity) errorHandler).getString(R.string.no_network));
+            return null;
+        }
     }
 
     public LiveData<List<Movie>> getTopRatedMovies() {
-        final MutableLiveData<List<Movie>> results = new MutableLiveData<>();
-        movieDbApi.getTopRatedMovies(Constants.API_KEY).enqueue(new Callback<MovieDbResponse>() {
-            @Override
-            public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
-                Log.d(TAG, "Fetched network response for top rated movies");
-                results.setValue(response.body().getResults());
-            }
+        if (NetworkUtils.isNetworkAvailable((Context)errorHandler)) {
+            final MutableLiveData<List<Movie>> results = new MutableLiveData<>();
+            movieDbApi.getTopRatedMovies(Constants.API_KEY).enqueue(new Callback<MovieDbResponse>() {
+                @Override
+                public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
+                    Log.d(TAG, "Fetched network response for top rated movies");
+                    results.setValue(response.body().getResults());
+                }
 
-            @Override
-            public void onFailure(Call<MovieDbResponse> call, Throwable t) {
-                Log.d(TAG, "Error fetching top rated movie data from network");
-                errorHandler.handleError(((Activity)errorHandler).getString(R.string.error_displaying_movies));
-            }
-        });
-        return results;
+                @Override
+                public void onFailure(Call<MovieDbResponse> call, Throwable t) {
+                    Log.d(TAG, "Error fetching top rated movie data from network");
+                    errorHandler.handleError(((Activity) errorHandler).getString(R.string.error_displaying_movies));
+                }
+            });
+            return results;
+        } else {
+            errorHandler.handleError(((Activity) errorHandler).getString(R.string.no_network));
+            return null;
+        }
     }
 
     public LiveData<MovieDbVideoReviewResponse> getMovieVideosAndReviews(int movieId) {
-        final MutableLiveData<MovieDbVideoReviewResponse> results = new MutableLiveData<>();
-        movieDbApi.getVideosAndReviewsForMovie(movieId, Constants.API_KEY,
-                NetworkUtils.APPEND_TO_RESPONSE).enqueue(new Callback<MovieDbVideoReviewResponse>() {
-            @Override
-            public void onResponse(Call<MovieDbVideoReviewResponse> call, Response<MovieDbVideoReviewResponse> response) {
-                Log.d(TAG, "Fetched network response for movie videos and reviews");
-                results.setValue(response.body());
-            }
+        if (NetworkUtils.isNetworkAvailable((Context)errorHandler)) {
+            final MutableLiveData<MovieDbVideoReviewResponse> results = new MutableLiveData<>();
+            movieDbApi.getVideosAndReviewsForMovie(movieId, Constants.API_KEY,
+                    NetworkUtils.APPEND_TO_RESPONSE).enqueue(new Callback<MovieDbVideoReviewResponse>() {
+                @Override
+                public void onResponse(Call<MovieDbVideoReviewResponse> call, Response<MovieDbVideoReviewResponse> response) {
+                    Log.d(TAG, "Fetched network response for movie videos and reviews");
+                    results.setValue(response.body());
+                }
 
-            @Override
-            public void onFailure(Call<MovieDbVideoReviewResponse> call, Throwable t) {
-                errorHandler.handleError(((Activity)errorHandler).getString(R.string.movie_data_not_available));
-            }
-        });
-        return results;
+                @Override
+                public void onFailure(Call<MovieDbVideoReviewResponse> call, Throwable t) {
+                    errorHandler.handleError(((Activity) errorHandler).getString(R.string.movie_data_not_available));
+                }
+            });
+            return results;
+        } else {
+            errorHandler.handleError(((Activity) errorHandler).getString(R.string.no_network));
+            return null;
+        }
     }
 
     public LiveData<List<Movie>> getFavoriteMovies() {
