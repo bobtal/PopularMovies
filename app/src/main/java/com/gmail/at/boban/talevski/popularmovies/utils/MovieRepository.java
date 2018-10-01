@@ -22,10 +22,16 @@ public class MovieRepository {
 
     private MovieDbApi movieDbApi;
     private MovieDao movieDao;
+    private ErrorHandler errorHandler;
 
-    public MovieRepository(MovieDbApi movieDbApi, MovieDao movieDao) {
+    public interface ErrorHandler {
+        void handleError();
+    }
+
+    public MovieRepository(MovieDbApi movieDbApi, MovieDao movieDao, ErrorHandler errorHandler) {
         this.movieDbApi = movieDbApi;
         this.movieDao = movieDao;
+        this.errorHandler = errorHandler;
     }
 
     public LiveData<List<Movie>> getPopularMovies() {
@@ -40,6 +46,7 @@ public class MovieRepository {
             @Override
             public void onFailure(Call<MovieDbResponse> call, Throwable t) {
                 Log.d(TAG, "Error fetching popular movie data from network");
+                errorHandler.handleError();
             }
         });
         return results;
@@ -57,6 +64,7 @@ public class MovieRepository {
             @Override
             public void onFailure(Call<MovieDbResponse> call, Throwable t) {
                 Log.d(TAG, "Error fetching top rated movie data from network");
+                errorHandler.handleError();
             }
         });
         return results;

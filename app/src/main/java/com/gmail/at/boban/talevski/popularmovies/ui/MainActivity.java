@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -25,6 +26,7 @@ import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
 import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
 import com.gmail.at.boban.talevski.popularmovies.utils.AppExecutors;
+import com.gmail.at.boban.talevski.popularmovies.utils.MovieRepository;
 import com.gmail.at.boban.talevski.popularmovies.utils.MovieType;
 import com.gmail.at.boban.talevski.popularmovies.utils.NetworkUtils;
 import com.gmail.at.boban.talevski.popularmovies.viewmodel.MainViewModel;
@@ -37,16 +39,20 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements MovieAdapter.MovieAdapterOnClickHandler {
+        implements MovieAdapter.MovieAdapterOnClickHandler,
+        MovieRepository.ErrorHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     public static final String EXTRA_MOVIE = "com.gmail.at.boban.talevski.popularmovies.ui.EXTRA_MOVIE";
     public static final String EXTRA_MOVIE_TYPE = "com.gmail.at.boban.talevski.popularmovies.ui.EXTRA_MOVIE_TYPE";
+    private static final String EXTRA_RECYCLER_VIEW_STATE = "com.gmail.at.boban.talevski.popularmovies.ui.EXTRA_RECYCLER_VIEW_STATE";;
 
     private MovieAdapter adapter;
 
     private MovieType movieType;
+
+    private Parcelable recyclerViewState;
 
     private RecyclerView moviesRecyclerView;
     private ProgressBar loadingProgress;
@@ -67,8 +73,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putSerializable(EXTRA_MOVIE_TYPE, movieType);
+        recyclerViewState = moviesRecyclerView.getLayoutManager().onSaveInstanceState();
+        outState.putParcelable(EXTRA_RECYCLER_VIEW_STATE, recyclerViewState);
         super.onSaveInstanceState(outState);
     }
 
@@ -76,12 +90,14 @@ public class MainActivity extends AppCompatActivity
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         movieType = (MovieType) savedInstanceState.getSerializable(EXTRA_MOVIE_TYPE);
+        recyclerViewState = savedInstanceState.getParcelable(EXTRA_RECYCLER_VIEW_STATE);
         setupViewModel();
     }
 
     private void setupViewModel() {
+        showProgressBar();
         MainViewModelFactory factory =
-                new MainViewModelFactory(AppDatabase.getInstance(this));
+                new MainViewModelFactory(AppDatabase.getInstance(this), this);
         final MainViewModel viewModel =
                 ViewModelProviders.of(this, factory).get(MainViewModel.class);
         viewModel.getMovies(movieType).observe(this, new Observer<List<Movie>>() {
@@ -102,6 +118,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemId = item.getItemId();
+
+        // clears recyclerViewState so it doesn't keep state when switching between
+        // different movie lists, but shows them from the top by default
+        recyclerViewState = null;
 
         switch (menuItemId) {
             case R.id.action_popular:
@@ -131,7 +151,9 @@ public class MainActivity extends AppCompatActivity
         int numberOfColumns = getResources().getInteger(R.integer.columns);
         moviesRecyclerView.setLayoutManager(
                 new GridLayoutManager(MainActivity.this, numberOfColumns));
+        moviesRecyclerView.getLayoutManager().onRestoreInstanceState(recyclerViewState);
         moviesRecyclerView.setHasFixedSize(true);
+        hideProgressBar();
     }
 
     private void hideProgressBar() {
@@ -149,5 +171,11 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
         intent.putExtra(EXTRA_MOVIE, movie);
         startActivity(intent);
+    }
+
+    @Override
+    public void handleError() {
+        Toast.makeText(this, R.string.error_displaying_movies, Toast.LENGTH_SHORT).show();
+        loadingProgress.setVisibility(View.INVISIBLE);
     }
 }
