@@ -23,13 +23,11 @@ public class MainViewModel extends ViewModel {
     private final MovieRepository movieRepository;
 
     public MainViewModel(AppDatabase database, MovieRepository.ErrorHandler errorHandler) {
-        Log.d(TAG, "Actively retrieving tasks from the Database");
 
         movieRepository = new MovieRepository(
                 RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class),
                 database.movieDao(),
                 errorHandler);
-
     }
 
     public LiveData<List<Movie>> getMovies(MovieType movieType) {
