@@ -1,9 +1,12 @@
 package com.gmail.at.boban.talevski.popularmovies.ui;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,24 +15,18 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.gmail.at.boban.talevski.popularmovies.Constants;
 import com.gmail.at.boban.talevski.popularmovies.R;
 import com.gmail.at.boban.talevski.popularmovies.adapter.MovieReviewsAdapter;
 import com.gmail.at.boban.talevski.popularmovies.adapter.MovieVideosAdapter;
-import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
 import com.gmail.at.boban.talevski.popularmovies.database.AppDatabase;
 import com.gmail.at.boban.talevski.popularmovies.databinding.ActivityDetailsBinding;
 import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbVideoReviewResponse;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieVideo;
-import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
 import com.gmail.at.boban.talevski.popularmovies.utils.AppExecutors;
 import com.gmail.at.boban.talevski.popularmovies.utils.MovieRepository;
-import com.gmail.at.boban.talevski.popularmovies.utils.NetworkUtils;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.gmail.at.boban.talevski.popularmovies.viewmodel.DetailsViewModel;
+import com.gmail.at.boban.talevski.popularmovies.viewmodel.DetailsViewModelFactory;
 
 public class DetailsActivity extends AppCompatActivity
         implements MovieVideosAdapter.MovieVideosAdapterClickHandler,
@@ -37,7 +34,6 @@ public class DetailsActivity extends AppCompatActivity
 
     private static final String TAG = DetailsActivity.class.getSimpleName();
 
-    private MovieDbApi api;
     private Movie movie;
     private MovieVideosAdapter movieVideosAdapter;
     private MovieReviewsAdapter movieReviewsAdapter;
@@ -63,49 +59,46 @@ public class DetailsActivity extends AppCompatActivity
             closeOnError();
         }
 
+        setupViewModel();
+    }
 
+    private void setupViewModel() {
+        showProgressBarVideos();
+        showProgressBarReviews();
+        DetailsViewModelFactory factory =
+                new DetailsViewModelFactory(AppDatabase.getInstance(this), movie.getId(),this);
+        final DetailsViewModel viewModel =
+                ViewModelProviders.of(this, factory).get(DetailsViewModel.class);
+        viewModel.getVideosAndReviewsForMovie().observe(this, new Observer<MovieDbVideoReviewResponse>() {
+            @Override
+            public void onChanged(@Nullable MovieDbVideoReviewResponse movieDbVideoReviewResponse) {
+                Log.d(TAG, "Updating movie videos and reviews from LiveData in ViewModel");
+                populateMovieVideosAndReviewsRecyclerViews(movieDbVideoReviewResponse);
+            }
+        });
+    }
 
-        api = RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class);
-        if (NetworkUtils.isNetworkAvailable(this)) {
-            showProgressBarReviews();
-            showProgressBarVideos();
-            Call<MovieDbVideoReviewResponse> call =
-                    api.getVideosAndReviewsForMovie(movie.getId(), Constants.API_KEY, NetworkUtils.APPEND_TO_RESPONSE);
-            call.enqueue(new Callback<MovieDbVideoReviewResponse>() {
-                @Override
-                public void onResponse(Call<MovieDbVideoReviewResponse> call, Response<MovieDbVideoReviewResponse> response) {
-                    Log.d(TAG, "video call success");
+    private void populateMovieVideosAndReviewsRecyclerViews(MovieDbVideoReviewResponse movieDbVideoReviewResponse) {
+        // get the videos from the response and pass them
+        // to the MovieVideosAdapter constructor
+        movieVideosAdapter = new MovieVideosAdapter(
+                DetailsActivity.this,
+                DetailsActivity.this,
+                movieDbVideoReviewResponse.getVideos().getResults());
+        binding.rvMovieVideos.setAdapter(movieVideosAdapter);
+        binding.rvMovieVideos.setLayoutManager(
+                new LinearLayoutManager(DetailsActivity.this));
+        hideProgressBarVideos();
 
-                    // get the videos from the response and pass them
-                    // to the MovieVideosAdapter constructor
-                    movieVideosAdapter = new MovieVideosAdapter(
-                            DetailsActivity.this,
-                            DetailsActivity.this,
-                            response.body().getVideos().getResults());
-                    binding.rvMovieVideos.setAdapter(movieVideosAdapter);
-                    binding.rvMovieVideos.setLayoutManager(
-                            new LinearLayoutManager(DetailsActivity.this));
-                    hideProgressBarVideos();
-
-                    // get the reviews from the response and pass them
-                    // to the MovieReviewsAdapter constructor
-                    movieReviewsAdapter = new MovieReviewsAdapter(
-                            DetailsActivity.this,
-                            response.body().getReviews().getResults());
-                    binding.rvMovieReviews.setAdapter(movieReviewsAdapter);
-                    binding.rvMovieReviews.setLayoutManager(
-                            new LinearLayoutManager(DetailsActivity.this));
-                    hideProgressBarReviews();
-                }
-
-                @Override
-                public void onFailure(Call<MovieDbVideoReviewResponse> call, Throwable t) {
-                    Log.d(TAG, "video call failure");
-                }
-            });
-        } else {
-            Toast.makeText(this, R.string.no_network, Toast.LENGTH_LONG).show();
-        }
+        // get the reviews from the response and pass them
+        // to the MovieReviewsAdapter constructor
+        movieReviewsAdapter = new MovieReviewsAdapter(
+                DetailsActivity.this,
+                movieDbVideoReviewResponse.getReviews().getResults());
+        binding.rvMovieReviews.setAdapter(movieReviewsAdapter);
+        binding.rvMovieReviews.setLayoutManager(
+                new LinearLayoutManager(DetailsActivity.this));
+        hideProgressBarReviews();
     }
 
     private void closeOnError() {

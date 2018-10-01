@@ -13,6 +13,7 @@ public class DetailsViewModel extends ViewModel {
 
     private final MovieRepository movieRepository;
     private LiveData<MovieDbVideoReviewResponse> movieVideosAndReviews;
+    private int movieId;
 
     public DetailsViewModel(AppDatabase database, int movieId,
                             MovieRepository.ErrorHandlerActivity errorHandler) {
@@ -20,9 +21,10 @@ public class DetailsViewModel extends ViewModel {
                 RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class),
                 database.movieDao(),
                 errorHandler);
+        this.movieId = movieId;
     }
 
-    public LiveData<MovieDbVideoReviewResponse> getVideosAndReviewsForMovie(int movieId) {
+    public LiveData<MovieDbVideoReviewResponse> getVideosAndReviewsForMovie() {
         if (movieVideosAndReviews == null || movieVideosAndReviews.getValue() == null) {
             movieVideosAndReviews = movieRepository.getMovieVideosAndReviews(movieId);
         }
