@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity
 
         // if it's a fresh activity creation, show favorite movies by default
         if (savedInstanceState == null) {
-            movieType = MovieType.FAVORITES;
+            movieType = MovieType.POPULAR;
             setupViewModel();
         }
     }
