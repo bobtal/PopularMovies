@@ -15,11 +15,14 @@
         Quisque aliquam tellus non mattis tempor. Aenean accumsan elit orci, at rutrum dui gravida eget.
         Quisque risus purus, volutpat eu ligula et, tristique finibus erat.</string>
 
+    <string name="action_share">Share</string>
+    <string name="share_trailer">Share trailer</string>
 
     <!--Error messages-->
     <string name="no_app_for_video">Sorry, can\'t open the video, no appropriate application is available on your device</string>
     <string name="error_displaying_movies">Problem displaying movies. Check your internet connection</string>
     <string name="no_network">No network connectivity. Please check your network connection and try again.</string>
     <string name="movie_data_not_available">Movie data not available</string>
+    <string name="no_videos_to_share">No videos to share</string>
 
 </resources>

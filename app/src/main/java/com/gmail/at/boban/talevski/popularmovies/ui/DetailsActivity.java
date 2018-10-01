@@ -11,6 +11,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -33,6 +35,7 @@ public class DetailsActivity extends AppCompatActivity
         MovieRepository.ErrorHandlerActivity {
 
     private static final String TAG = DetailsActivity.class.getSimpleName();
+    private static final String YOUTUBE_BASE_URL_V = "https://www.youtube.com/watch?v=";
 
     private Movie movie;
     private MovieVideosAdapter movieVideosAdapter;
@@ -40,6 +43,8 @@ public class DetailsActivity extends AppCompatActivity
     private ActivityDetailsBinding binding;
     private AppDatabase db;
     private boolean isFavoriteMovie = false;
+    // a key to be used for sharing of the first trailer of movie
+    private String firstTrailerKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +65,32 @@ public class DetailsActivity extends AppCompatActivity
         }
 
         setupViewModel();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int menuItemId = item.getItemId();
+
+        switch (menuItemId) {
+            case R.id.action_share:
+                if (firstTrailerKey != null) {
+                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                    shareIntent.setType("text/plain");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, YOUTUBE_BASE_URL_V + firstTrailerKey);
+                    Intent.createChooser(shareIntent, getString(R.string.share_trailer));
+                    startActivity(shareIntent);
+                } else {
+                    Toast.makeText(this, R.string.no_videos_to_share, Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setupViewModel() {
@@ -86,6 +117,12 @@ public class DetailsActivity extends AppCompatActivity
                     DetailsActivity.this,
                     DetailsActivity.this,
                     movieDbVideoReviewResponse.getVideos().getResults());
+            // extract the first trailer key to be used in the share intent
+            if (movieDbVideoReviewResponse.getVideos().getResults().size() != 0) {
+                firstTrailerKey = movieDbVideoReviewResponse.getVideos().getResults().get(0).getKey();
+            } else {
+                firstTrailerKey = null;
+            }
             binding.rvMovieVideos.setAdapter(movieVideosAdapter);
             binding.rvMovieVideos.setLayoutManager(
                     new LinearLayoutManager(DetailsActivity.this));
@@ -132,7 +169,7 @@ public class DetailsActivity extends AppCompatActivity
 
     @Override
     public void onListItemClick(MovieVideo movieVideo) {
-        Uri uri = Uri.parse("https://www.youtube.com/watch?v=" + movieVideo.getKey());
+        Uri uri = Uri.parse(YOUTUBE_BASE_URL_V + movieVideo.getKey());
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
