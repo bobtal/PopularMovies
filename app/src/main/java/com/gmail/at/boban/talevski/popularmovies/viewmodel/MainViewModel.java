@@ -22,7 +22,7 @@ public class MainViewModel extends ViewModel {
     private LiveData<List<Movie>> favoriteMovies;
     private final MovieRepository movieRepository;
 
-    public MainViewModel(AppDatabase database, MovieRepository.ErrorHandler errorHandler) {
+    public MainViewModel(AppDatabase database, MovieRepository.ErrorHandlerActivity errorHandler) {
 
         movieRepository = new MovieRepository(
                 RetrofitClientInstance.getRetrofitInstance().create(MovieDbApi.class),

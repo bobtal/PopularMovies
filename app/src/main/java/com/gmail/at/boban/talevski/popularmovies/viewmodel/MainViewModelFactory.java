@@ -9,9 +9,9 @@ import com.gmail.at.boban.talevski.popularmovies.utils.MovieRepository;
 public class MainViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     private final AppDatabase database;
-    private final MovieRepository.ErrorHandler errorHandler;
+    private final MovieRepository.ErrorHandlerActivity errorHandler;
 
-    public MainViewModelFactory(AppDatabase database, MovieRepository.ErrorHandler errorHandler) {
+    public MainViewModelFactory(AppDatabase database, MovieRepository.ErrorHandlerActivity errorHandler) {
         this.database = database;
         this.errorHandler = errorHandler;
     }

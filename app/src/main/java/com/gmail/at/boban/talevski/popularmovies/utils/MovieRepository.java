@@ -1,14 +1,17 @@
 package com.gmail.at.boban.talevski.popularmovies.utils;
 
+import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import com.gmail.at.boban.talevski.popularmovies.Constants;
+import com.gmail.at.boban.talevski.popularmovies.R;
 import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
 import com.gmail.at.boban.talevski.popularmovies.database.MovieDao;
 import com.gmail.at.boban.talevski.popularmovies.model.Movie;
 import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
+import com.gmail.at.boban.talevski.popularmovies.model.MovieDbVideoReviewResponse;
 
 import java.util.List;
 
@@ -22,13 +25,15 @@ public class MovieRepository {
 
     private MovieDbApi movieDbApi;
     private MovieDao movieDao;
-    private ErrorHandler errorHandler;
+    private ErrorHandlerActivity errorHandler;
 
-    public interface ErrorHandler {
-        void handleError();
+    // should only be implemented by an Activity as it's also used
+    // to access string resources using its context
+    public interface ErrorHandlerActivity {
+        void handleError(String errorMessage);
     }
 
-    public MovieRepository(MovieDbApi movieDbApi, MovieDao movieDao, ErrorHandler errorHandler) {
+    public MovieRepository(MovieDbApi movieDbApi, MovieDao movieDao, ErrorHandlerActivity errorHandler) {
         this.movieDbApi = movieDbApi;
         this.movieDao = movieDao;
         this.errorHandler = errorHandler;
@@ -46,7 +51,7 @@ public class MovieRepository {
             @Override
             public void onFailure(Call<MovieDbResponse> call, Throwable t) {
                 Log.d(TAG, "Error fetching popular movie data from network");
-                errorHandler.handleError();
+                errorHandler.handleError(((Activity)errorHandler).getString(R.string.error_displaying_movies));
             }
         });
         return results;
@@ -64,7 +69,7 @@ public class MovieRepository {
             @Override
             public void onFailure(Call<MovieDbResponse> call, Throwable t) {
                 Log.d(TAG, "Error fetching top rated movie data from network");
-                errorHandler.handleError();
+                errorHandler.handleError(((Activity)errorHandler).getString(R.string.error_displaying_movies));
             }
         });
         return results;

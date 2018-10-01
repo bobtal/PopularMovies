@@ -1,6 +1,5 @@
 package com.gmail.at.boban.talevski.popularmovies.ui;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -17,30 +16,20 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.gmail.at.boban.talevski.popularmovies.Constants;
 import com.gmail.at.boban.talevski.popularmovies.R;
 import com.gmail.at.boban.talevski.popularmovies.adapter.MovieAdapter;
-import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
 import com.gmail.at.boban.talevski.popularmovies.database.AppDatabase;
 import com.gmail.at.boban.talevski.popularmovies.model.Movie;
-import com.gmail.at.boban.talevski.popularmovies.model.MovieDbResponse;
-import com.gmail.at.boban.talevski.popularmovies.network.RetrofitClientInstance;
-import com.gmail.at.boban.talevski.popularmovies.utils.AppExecutors;
 import com.gmail.at.boban.talevski.popularmovies.utils.MovieRepository;
 import com.gmail.at.boban.talevski.popularmovies.utils.MovieType;
-import com.gmail.at.boban.talevski.popularmovies.utils.NetworkUtils;
 import com.gmail.at.boban.talevski.popularmovies.viewmodel.MainViewModel;
 import com.gmail.at.boban.talevski.popularmovies.viewmodel.MainViewModelFactory;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class MainActivity extends AppCompatActivity
         implements MovieAdapter.MovieAdapterOnClickHandler,
-        MovieRepository.ErrorHandler {
+        MovieRepository.ErrorHandlerActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -174,8 +163,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void handleError() {
-        Toast.makeText(this, R.string.error_displaying_movies, Toast.LENGTH_SHORT).show();
+    public void handleError(String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
         loadingProgress.setVisibility(View.INVISIBLE);
     }
 }
