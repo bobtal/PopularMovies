@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -86,7 +87,7 @@ public class DetailsActivity extends AppCompatActivity
                     Intent.createChooser(shareIntent, getString(R.string.share_trailer));
                     startActivity(shareIntent);
                 } else {
-                    Toast.makeText(this, R.string.no_videos_to_share, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(binding.flMovieReviews, R.string.no_videos_to_share, Snackbar.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -233,7 +234,7 @@ public class DetailsActivity extends AppCompatActivity
 
     @Override
     public void handleError(String errorMessage) {
-        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        Snackbar.make(binding.flMovieReviews, errorMessage, Snackbar.LENGTH_SHORT).show();
         binding.loadingProgressReviews.setVisibility(View.INVISIBLE);
         binding.loadingProgressVideos.setVisibility(View.INVISIBLE);
     }

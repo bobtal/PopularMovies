@@ -37,13 +37,15 @@ public class MainViewModel extends ViewModel {
             // xxxMovies is no longer null but they still don't have a valid movie list
             // and checking for xxxMovies == null prevents NPE on xxxMovies.getValue()
             case POPULAR:
-                if (popularMovies == null || popularMovies.getValue() == null) {
+                if (popularMovies == null || popularMovies.getValue() == null ||
+                        popularMovies.getValue().size() == 0) {
                     popularMovies = movieRepository.getPopularMovies();
                 }
                 return popularMovies;
 
             case TOP_RATED:
-                if (topRatedMovies == null || topRatedMovies.getValue() == null) {
+                if (topRatedMovies == null || topRatedMovies.getValue() == null ||
+                        topRatedMovies.getValue().size() == 0) {
                     topRatedMovies = movieRepository.getTopRatedMovies();
                 }
                 return topRatedMovies;

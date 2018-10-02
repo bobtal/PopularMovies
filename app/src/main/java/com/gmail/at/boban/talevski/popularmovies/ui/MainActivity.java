@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -46,6 +49,8 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView moviesRecyclerView;
     private ProgressBar loadingProgress;
 
+    private FrameLayout frameLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +58,8 @@ public class MainActivity extends AppCompatActivity
 
         moviesRecyclerView = findViewById(R.id.rv_movies);
         loadingProgress = findViewById(R.id.loading_progress);
+
+        frameLayout = findViewById(R.id.frame_layout);
 
         // if it's a fresh activity creation, show favorite movies by default
         if (savedInstanceState == null) {
@@ -164,7 +171,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void handleError(String errorMessage) {
-        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
         loadingProgress.setVisibility(View.INVISIBLE);
+        Snackbar.make(frameLayout, errorMessage, Snackbar.LENGTH_SHORT).show();
     }
 }
