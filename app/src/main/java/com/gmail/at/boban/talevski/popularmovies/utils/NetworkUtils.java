@@ -4,8 +4,11 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.gmail.at.boban.talevski.popularmovies.BuildConfig;
+
 public final class NetworkUtils {
 
+    public static final String API_KEY = BuildConfig.API_KEY;
     public static final String APPEND_TO_RESPONSE = "videos,reviews";
 
     // overridden default constructor to prevent instantiation

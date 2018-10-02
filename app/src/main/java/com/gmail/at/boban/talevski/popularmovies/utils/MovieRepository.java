@@ -6,7 +6,6 @@ import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.util.Log;
 
-import com.gmail.at.boban.talevski.popularmovies.Constants;
 import com.gmail.at.boban.talevski.popularmovies.R;
 import com.gmail.at.boban.talevski.popularmovies.api.MovieDbApi;
 import com.gmail.at.boban.talevski.popularmovies.database.MovieDao;
@@ -44,7 +43,7 @@ public class MovieRepository {
     public LiveData<List<Movie>> getPopularMovies() {
         final MutableLiveData<List<Movie>> results = new MutableLiveData<>();
         if (NetworkUtils.isNetworkAvailable((Context)errorHandler)) {
-            movieDbApi.getPopularMovies(Constants.API_KEY).enqueue(new Callback<MovieDbResponse>() {
+            movieDbApi.getPopularMovies(NetworkUtils.API_KEY).enqueue(new Callback<MovieDbResponse>() {
                 @Override
                 public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
                     Log.d(TAG, "Fetched network response for popular movies");
@@ -69,7 +68,7 @@ public class MovieRepository {
     public LiveData<List<Movie>> getTopRatedMovies() {
         final MutableLiveData<List<Movie>> results = new MutableLiveData<>();
         if (NetworkUtils.isNetworkAvailable((Context)errorHandler)) {
-            movieDbApi.getTopRatedMovies(Constants.API_KEY).enqueue(new Callback<MovieDbResponse>() {
+            movieDbApi.getTopRatedMovies(NetworkUtils.API_KEY).enqueue(new Callback<MovieDbResponse>() {
                 @Override
                 public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
                     Log.d(TAG, "Fetched network response for top rated movies");
@@ -94,7 +93,7 @@ public class MovieRepository {
     public LiveData<MovieDbVideoReviewResponse> getMovieVideosAndReviews(int movieId) {
         final MutableLiveData<MovieDbVideoReviewResponse> results = new MutableLiveData<>();
         if (NetworkUtils.isNetworkAvailable((Context)errorHandler)) {
-            movieDbApi.getVideosAndReviewsForMovie(movieId, Constants.API_KEY,
+            movieDbApi.getVideosAndReviewsForMovie(movieId, NetworkUtils.API_KEY,
                     NetworkUtils.APPEND_TO_RESPONSE).enqueue(new Callback<MovieDbVideoReviewResponse>() {
                 @Override
                 public void onResponse(Call<MovieDbVideoReviewResponse> call, Response<MovieDbVideoReviewResponse> response) {
