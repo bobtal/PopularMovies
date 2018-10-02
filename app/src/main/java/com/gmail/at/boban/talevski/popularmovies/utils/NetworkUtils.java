@@ -8,6 +8,9 @@ public final class NetworkUtils {
 
     public static final String APPEND_TO_RESPONSE = "videos,reviews";
 
+    // overridden default constructor to prevent instantiation
+    private NetworkUtils(){}
+
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager manager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
